@@ -1,0 +1,23 @@
+name: Daily Payout Scheduler
+on:
+  schedule:
+    - cron: '0 2 * * *'  # daily at 02:00 UTC
+  workflow_dispatch:
+
+jobs:
+  payout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install deps
+        run: npm ci
+      - name: Run payout script
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PLATFORM_CONNECTED_ACCOUNT_ID: ${{ secrets.PLATFORM_CONNECTED_ACCOUNT_ID }}
+        run: node ./scripts/payout.js

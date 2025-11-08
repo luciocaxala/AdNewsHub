@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS ads (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  url TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  image TEXT DEFAULT '',
+  paid BOOLEAN DEFAULT FALSE,
+  approved BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS admins (
+  id SERIAL PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS impressions (
+  id SERIAL PRIMARY KEY,
+  ad_id INTEGER REFERENCES ads(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ads_approved ON ads (approved DESC, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_impressions_ad ON impressions (ad_id);
